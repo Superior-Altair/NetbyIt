@@ -2,25 +2,24 @@ import React from 'react';
 import {
     Box,
     TextField,
+    Button,
+    Stack,
     FormControl,
     InputLabel,
     Select,
     MenuItem,
-    IconButton,
-    SelectChangeEvent,
-    Stack,
 } from '@mui/material';
-import { Clear as ClearIcon } from '@mui/icons-material';
 
 interface FilterOption {
-    value: string | number;
+    value: string;
+    options: { value: string; label: string }[];
     label: string;
+    onChange: (value: string) => void;
 }
 
-interface CustomFilter {
-    type: 'text' | 'number' | 'date';
-    label: string;
+interface NumericFilter {
     value: string;
+    label: string;
     onChange: (value: string) => void;
 }
 
@@ -31,13 +30,8 @@ interface FilterBarProps {
     onDateFromChange?: (value: string) => void;
     dateTo?: string;
     onDateToChange?: (value: string) => void;
-    filterOptions?: {
-        value: string | number;
-        options: FilterOption[];
-        label: string;
-        onChange: (value: string | number) => void;
-    }[];
-    customFilters?: CustomFilter[];
+    filterOptions?: FilterOption[];
+    numericFilters?: NumericFilter[];
     onClearFilters: () => void;
 }
 
@@ -49,41 +43,41 @@ const FilterBar: React.FC<FilterBarProps> = ({
     dateTo,
     onDateToChange,
     filterOptions = [],
-    customFilters = [],
+    numericFilters = [],
     onClearFilters,
 }) => {
+    const showDateFilters = Boolean(onDateFromChange && onDateToChange);
+
     return (
-        <Box sx={{ mb: 2, p: 2, backgroundColor: 'background.paper', borderRadius: 1 }}>
-            <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+        <Box sx={{ mb: 3, p: 2, bgcolor: 'background.paper', borderRadius: 1 }}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <TextField
                     size="small"
                     label="Buscar"
-                    variant="outlined"
                     value={searchText}
                     onChange={(e) => onSearchChange(e.target.value)}
                     sx={{ minWidth: 200 }}
                 />
 
-                {dateFrom !== undefined && onDateFromChange && (
-                    <TextField
-                        size="small"
-                        label="Desde"
-                        type="date"
-                        value={dateFrom}
-                        onChange={(e) => onDateFromChange(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
-                    />
-                )}
-
-                {dateTo !== undefined && onDateToChange && (
-                    <TextField
-                        size="small"
-                        label="Hasta"
-                        type="date"
-                        value={dateTo}
-                        onChange={(e) => onDateToChange(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
-                    />
+                {showDateFilters && (
+                    <>
+                        <TextField
+                            size="small"
+                            label="Desde"
+                            type="date"
+                            value={dateFrom}
+                            onChange={(e) => onDateFromChange?.(e.target.value)}
+                            InputLabelProps={{ shrink: true }}
+                        />
+                        <TextField
+                            size="small"
+                            label="Hasta"
+                            type="date"
+                            value={dateTo}
+                            onChange={(e) => onDateToChange?.(e.target.value)}
+                            InputLabelProps={{ shrink: true }}
+                        />
+                    </>
                 )}
 
                 {filterOptions.map((filter, index) => (
@@ -92,12 +86,11 @@ const FilterBar: React.FC<FilterBarProps> = ({
                         <Select
                             value={filter.value}
                             label={filter.label}
-                            onChange={(e: SelectChangeEvent<string | number>) => 
-                                filter.onChange(e.target.value)}
+                            onChange={(e) => filter.onChange(e.target.value)}
                         >
                             <MenuItem value="">Todos</MenuItem>
-                            {filter.options.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
+                            {filter.options.map((option, idx) => (
+                                <MenuItem key={idx} value={option.value}>
                                     {option.label}
                                 </MenuItem>
                             ))}
@@ -105,21 +98,25 @@ const FilterBar: React.FC<FilterBarProps> = ({
                     </FormControl>
                 ))}
 
-                {customFilters.map((filter, index) => (
+                {numericFilters.map((filter, index) => (
                     <TextField
                         key={index}
                         size="small"
                         label={filter.label}
-                        type={filter.type}
+                        type="number"
                         value={filter.value}
                         onChange={(e) => filter.onChange(e.target.value)}
                         sx={{ minWidth: 120 }}
                     />
                 ))}
 
-                <IconButton onClick={onClearFilters} size="small">
-                    <ClearIcon />
-                </IconButton>
+                <Button
+                    variant="outlined"
+                    onClick={onClearFilters}
+                    sx={{ whiteSpace: 'nowrap' }}
+                >
+                    Limpiar Filtros
+                </Button>
             </Stack>
         </Box>
     );

@@ -18,7 +18,7 @@ namespace ProductService.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Product>()
-                .HasOne<Category>()
+                .HasOne(p => p.Category)
                 .WithMany()
                 .HasForeignKey(p => p.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);

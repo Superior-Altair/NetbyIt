@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TransactionService.Data;
 using TransactionService.Models;
+using TransactionService.Models.DTOs;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -31,9 +32,50 @@ namespace TransactionService.Controllers
                 var transactions = await _context.Transactions
                     .Include(t => t.TransactionType)
                     .OrderByDescending(t => t.TransactionDate)
+                    .Select(t => new {
+                        t.TransactionId,
+                        t.TransactionDate,
+                        TransactionTypeName = t.TransactionType.Name,
+                        t.ProductId,
+                        t.Quantity,
+                        t.UnitPrice,
+                        t.TotalPrice,
+                        t.Details,
+                        t.CreatedAt
+                    })
                     .ToListAsync();
 
-                return Ok(transactions);
+                var transactionsWithProductNames = new List<object>();
+                foreach (var transaction in transactions)
+                {
+                    var productResponse = await _httpClient.GetAsync($"{_productServiceUrl}/{transaction.ProductId}");
+                    string productName = "Producto no disponible";
+                    
+                    if (productResponse.IsSuccessStatusCode)
+                    {
+                        var productJson = await productResponse.Content.ReadAsStringAsync();
+                        var product = JsonSerializer.Deserialize<Product>(productJson, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+                        productName = product?.Name ?? "Producto no disponible";
+                    }
+
+                    transactionsWithProductNames.Add(new {
+                        transaction.TransactionId,
+                        transaction.TransactionDate,
+                        transaction.TransactionTypeName,
+                        transaction.ProductId,
+                        ProductName = productName,
+                        transaction.Quantity,
+                        transaction.UnitPrice,
+                        transaction.TotalPrice,
+                        transaction.Details,
+                        transaction.CreatedAt
+                    });
+                }
+
+                return Ok(transactionsWithProductNames);
             }
             catch (Exception ex)
             {
@@ -49,14 +91,52 @@ namespace TransactionService.Controllers
             {
                 var transaction = await _context.Transactions
                     .Include(t => t.TransactionType)
-                    .FirstOrDefaultAsync(t => t.TransactionId == id);
+                    .Where(t => t.TransactionId == id)
+                    .Select(t => new {
+                        t.TransactionId,
+                        t.TransactionDate,
+                        TransactionTypeName = t.TransactionType.Name,
+                        t.ProductId,
+                        t.Quantity,
+                        t.UnitPrice,
+                        t.TotalPrice,
+                        t.Details,
+                        t.CreatedAt
+                    })
+                    .FirstOrDefaultAsync();
 
                 if (transaction == null)
                 {
                     return NotFound(new { message = $"No se encontró la transacción con ID {id}" });
                 }
 
-                return Ok(transaction);
+                var productResponse = await _httpClient.GetAsync($"{_productServiceUrl}/{transaction.ProductId}");
+                string productName = "Producto no disponible";
+                
+                if (productResponse.IsSuccessStatusCode)
+                {
+                    var productJson = await productResponse.Content.ReadAsStringAsync();
+                    var product = JsonSerializer.Deserialize<Product>(productJson, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    productName = product?.Name ?? "Producto no disponible";
+                }
+
+                var result = new {
+                    transaction.TransactionId,
+                    transaction.TransactionDate,
+                    transaction.TransactionTypeName,
+                    transaction.ProductId,
+                    ProductName = productName,
+                    transaction.Quantity,
+                    transaction.UnitPrice,
+                    transaction.TotalPrice,
+                    transaction.Details,
+                    transaction.CreatedAt
+                };
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -74,9 +154,47 @@ namespace TransactionService.Controllers
                     .Include(t => t.TransactionType)
                     .Where(t => t.ProductId == productId)
                     .OrderByDescending(t => t.TransactionDate)
+                    .Select(t => new {
+                        t.TransactionId,
+                        t.TransactionDate,
+                        TransactionTypeName = t.TransactionType.Name,
+                        t.ProductId,
+                        t.Quantity,
+                        t.UnitPrice,
+                        t.TotalPrice,
+                        t.Details,
+                        t.CreatedAt
+                    })
                     .ToListAsync();
 
-                return Ok(transactions);
+                // Obtener el nombre del producto una sola vez ya que todas las transacciones son del mismo producto
+                var productResponse = await _httpClient.GetAsync($"{_productServiceUrl}/{productId}");
+                string productName = "Producto no disponible";
+                
+                if (productResponse.IsSuccessStatusCode)
+                {
+                    var productJson = await productResponse.Content.ReadAsStringAsync();
+                    var product = JsonSerializer.Deserialize<Product>(productJson, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    productName = product?.Name ?? "Producto no disponible";
+                }
+
+                var result = transactions.Select(transaction => new {
+                    transaction.TransactionId,
+                    transaction.TransactionDate,
+                    transaction.TransactionTypeName,
+                    transaction.ProductId,
+                    ProductName = productName,
+                    transaction.Quantity,
+                    transaction.UnitPrice,
+                    transaction.TotalPrice,
+                    transaction.Details,
+                    transaction.CreatedAt
+                });
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -328,6 +446,12 @@ namespace TransactionService.Controllers
     {
         public int ProductId { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
+        public string CategoryName { get; set; }
+        public string ImageUrl { get; set; }
+        public decimal Price { get; set; }
         public int Stock { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 } 

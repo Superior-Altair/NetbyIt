@@ -83,6 +83,170 @@
           "Value": "sha256-CbVxECmLAIqGpX9t2kdg2puISo5u9mCgVgLdR/o8kr4="
         }
       ]
+    },
+    {
+      "Route": "images/products/53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.45pe26a7qe.jpg",
+      "AssetFile": "images/products/53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12228"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"OA+GvLfFk1DghXNQSyI0200ckq3DlOKkM6lrvRtcsOs=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 04 Apr 2025 15:31:54 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "45pe26a7qe"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-OA+GvLfFk1DghXNQSyI0200ckq3DlOKkM6lrvRtcsOs="
+        },
+        {
+          "Name": "label",
+          "Value": "images/products/53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg"
+        }
+      ]
+    },
+    {
+      "Route": "images/products/53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg",
+      "AssetFile": "images/products/53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12228"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"OA+GvLfFk1DghXNQSyI0200ckq3DlOKkM6lrvRtcsOs=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 04 Apr 2025 15:31:54 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-OA+GvLfFk1DghXNQSyI0200ckq3DlOKkM6lrvRtcsOs="
+        }
+      ]
+    },
+    {
+      "Route": "images/products/9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg",
+      "AssetFile": "images/products/9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "44254"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ndLl15vfPGB0FXluUxReRiussOR84Pj12mUAZGrHMNE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 04 Apr 2025 19:01:07 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-ndLl15vfPGB0FXluUxReRiussOR84Pj12mUAZGrHMNE="
+        }
+      ]
+    },
+    {
+      "Route": "images/products/9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.x3lj9ybfsw.jpg",
+      "AssetFile": "images/products/9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "44254"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ndLl15vfPGB0FXluUxReRiussOR84Pj12mUAZGrHMNE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 04 Apr 2025 19:01:07 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "x3lj9ybfsw"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-ndLl15vfPGB0FXluUxReRiussOR84Pj12mUAZGrHMNE="
+        },
+        {
+          "Name": "label",
+          "Value": "images/products/9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg"
+        }
+      ]
     }
   ]
 }

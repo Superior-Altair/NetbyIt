@@ -1,18 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider, createTheme, Container, CssBaseline } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import Layout from './components/Layout/Layout';
-import ProductList from './components/Products/ProductList';
-import TransactionList from './components/Transactions/TransactionList';
 import Dashboard from './components/Dashboard/Dashboard';
 import Products from './components/Products/Products';
-import { Product } from './types/models';
 import { Categories } from './components/Categories/Categories';
 import { Transactions } from './components/Transactions/Transactions';
-
-// Crear el cliente de React Query
-const queryClient = new QueryClient();
+import { SnackbarProvider } from 'notistack';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Crear el tema de Material-UI
 const theme = createTheme({
@@ -27,20 +22,15 @@ const theme = createTheme({
   },
 });
 
-function App() {
-  const handleEdit = (product: Product) => {
-    // Lógica para editar el producto
-  };
+// Crear la instancia de QueryClient
+const queryClient = new QueryClient();
 
-  const handleDelete = (id: number) => {
-    // Lógica para eliminar el producto
-  };
-
+const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Container maxWidth="lg">
+        <SnackbarProvider maxSnack={3}>
           <Router>
             <Layout>
               <Routes>
@@ -51,10 +41,10 @@ function App() {
               </Routes>
             </Layout>
           </Router>
-        </Container>
+        </SnackbarProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
-}
+};
 
 export default App; 

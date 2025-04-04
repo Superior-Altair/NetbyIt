@@ -12,5 +12,29 @@
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-CbVxECmLAIqGpX9t2kdg2puISo5u9mCgVgLdR/o8kr4="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"3630823"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022CbVxECmLAIqGpX9t2kdg2puISo5u9mCgVgLdR/o8kr4=\u0022"},{"Name":"Last-Modified","Value":"Thu, 03 Apr 2025 19:15:17 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/ProductService/images/products/53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.45pe26a7qe.jpg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\products\53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"45pe26a7qe"},{"Name":"integrity","Value":"sha256-OA\u002BGvLfFk1DghXNQSyI0200ckq3DlOKkM6lrvRtcsOs="},{"Name":"label","Value":"_content/ProductService/images/products/53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"12228"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022OA\u002BGvLfFk1DghXNQSyI0200ckq3DlOKkM6lrvRtcsOs=\u0022"},{"Name":"Last-Modified","Value":"Fri, 04 Apr 2025 15:31:54 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/ProductService/images/products/53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\products\53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-OA\u002BGvLfFk1DghXNQSyI0200ckq3DlOKkM6lrvRtcsOs="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"12228"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022OA\u002BGvLfFk1DghXNQSyI0200ckq3DlOKkM6lrvRtcsOs=\u0022"},{"Name":"Last-Modified","Value":"Fri, 04 Apr 2025 15:31:54 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/ProductService/images/products/9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\products\9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-ndLl15vfPGB0FXluUxReRiussOR84Pj12mUAZGrHMNE="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"44254"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022ndLl15vfPGB0FXluUxReRiussOR84Pj12mUAZGrHMNE=\u0022"},{"Name":"Last-Modified","Value":"Fri, 04 Apr 2025 19:01:07 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/ProductService/images/products/9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.x3lj9ybfsw.jpg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\products\9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"x3lj9ybfsw"},{"Name":"integrity","Value":"sha256-ndLl15vfPGB0FXluUxReRiussOR84Pj12mUAZGrHMNE="},{"Name":"label","Value":"_content/ProductService/images/products/9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"44254"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022ndLl15vfPGB0FXluUxReRiussOR84Pj12mUAZGrHMNE=\u0022"},{"Name":"Last-Modified","Value":"Fri, 04 Apr 2025 19:01:07 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
   </ItemGroup>
 </Project>

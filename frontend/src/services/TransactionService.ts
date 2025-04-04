@@ -3,12 +3,10 @@ import { Transaction } from '../types/models';
 
 const API_URL = process.env.REACT_APP_TRANSACTION_SERVICE_URL || 'http://localhost:5008';
 
-// Crear una instancia de axios con la configuración base
 const api = axios.create({
     baseURL: `${API_URL}/api`
 });
 
-// Agregar interceptores para debugging
 api.interceptors.request.use(request => {
     console.log('Request:', JSON.stringify({
         url: request.url,
@@ -47,8 +45,33 @@ export interface TransactionType {
 
 export const TransactionService = {
     getAll: async (): Promise<Transaction[]> => {
-        const response = await api.get('/transactions');
-        return response.data;
+        try {
+            const response = await api.get('/transactions');
+            
+            const transactionsWithoutProduct = response.data.filter(
+                (transaction: Transaction) => !transaction.productName
+            );
+            
+            const transactionsWithoutType = response.data.filter(
+                (transaction: Transaction) => !transaction.transactionTypeName
+            );
+            
+            if (transactionsWithoutProduct.length > 0) {
+                console.warn('Algunas transacciones no tienen nombre de producto:', transactionsWithoutProduct);
+            }
+            
+            if (transactionsWithoutType.length > 0) {
+                console.warn('Algunas transacciones no tienen nombre de tipo:', transactionsWithoutType);
+            }
+            
+            return response.data;
+        } catch (error: any) {
+            console.error('Error al obtener transacciones:', error);
+            if (error.response?.status === 404) {
+                return [];
+            }
+            throw error;
+        }
     },
 
     getById: async (id: number): Promise<Transaction> => {
@@ -61,33 +84,50 @@ export const TransactionService = {
         return response.data;
     },
 
-    create: async (transaction: Omit<Transaction, 'transactionId' | 'createdAt' | 'transactionType'>): Promise<Transaction> => {
-        const response = await api.post('/transactions', {
-            ...transaction,
-            transactionDate: transaction.transactionDate ? new Date(transaction.transactionDate).toISOString() : new Date().toISOString()
-        });
+    create: async (transaction: Omit<Transaction, 'transactionId' | 'createdAt'>): Promise<Transaction> => {
+        const createData = {
+            transactionDate: transaction.transactionDate ? new Date(transaction.transactionDate).toISOString() : new Date().toISOString(),
+            transactionTypeId: transaction.transactionTypeId,
+            productId: transaction.productId,
+            quantity: transaction.quantity,
+            unitPrice: transaction.unitPrice,
+            totalPrice: transaction.totalPrice,
+            details: transaction.details
+        };
+        const response = await api.post('/transactions', createData);
         return response.data;
     },
 
     update: async (id: number, transaction: Partial<Transaction>): Promise<Transaction> => {
-        if (transaction.transactionDate) {
-            transaction.transactionDate = new Date(transaction.transactionDate).toISOString();
-        }
-        const response = await api.put(`/transactions/${id}`, transaction);
+        const updateData = {
+            transactionDate: transaction.transactionDate ? new Date(transaction.transactionDate).toISOString() : undefined,
+            transactionTypeId: transaction.transactionTypeId,
+            productId: transaction.productId,
+            quantity: transaction.quantity,
+            unitPrice: transaction.unitPrice,
+            totalPrice: transaction.totalPrice,
+            details: transaction.details
+        };
+        const response = await api.put(`/transactions/${id}`, updateData);
         return response.data;
     },
 
     delete: async (id: number): Promise<void> => {
-        await api.delete(`/transactions/${id}`);
+        try {
+            await api.delete(`/transactions/${id}`);
+        } catch (error: any) {
+            if (error.response?.status === 404) {
+                throw new Error('La transacción no existe o ya fue eliminada');
+            }
+            throw error;
+        }
     },
 
-    // Métodos adicionales para tipos de transacción
     getTransactionTypes: async (): Promise<TransactionType[]> => {
         const response = await api.get('/transactiontypes');
         return response.data;
     },
 
-    // Método para inicializar tipos de transacción
     initializeTransactionTypes: async (): Promise<TransactionType[]> => {
         const defaultTypes = [
             { name: 'Compra', type: 'IN' as const },
@@ -95,10 +135,8 @@ export const TransactionService = {
         ];
 
         try {
-            // Intentar obtener los tipos existentes
             const existingTypes = await TransactionService.getTransactionTypes();
             if (existingTypes.length === 0) {
-                // Si no hay tipos, crear los tipos por defecto
                 const creationPromises = defaultTypes.map(type => 
                     api.post('/transactiontypes', type)
                 );
@@ -111,4 +149,4 @@ export const TransactionService = {
             throw error;
         }
     }
-}; 
+};

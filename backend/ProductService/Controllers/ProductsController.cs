@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Data;
 using ProductService.Models;
+using ProductService.Models.DTOs;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 
@@ -24,22 +25,66 @@ namespace ProductService.Controllers
 
         // GET: api/products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<IEnumerable<object>>> GetProducts()
         {
-            var products = await _context.Products
-                .Include(p => p.Category)
-                .ToListAsync();
+            try
+            {
+                _logger.LogInformation("Obteniendo productos con sus categorías...");
+                
+                var products = await _context.Products
+                    .Include(p => p.Category)
+                    .ToListAsync();
 
-            return Ok(products);
+                _logger.LogInformation($"Se encontraron {products.Count} productos");
+
+                var result = products.Select(p => new {
+                    p.ProductId,
+                    p.Name,
+                    p.Description,
+                    p.CategoryId,
+                    CategoryName = p.Category?.Name ?? "Sin categoría",
+                    p.ImageUrl,
+                    p.Price,
+                    p.Stock,
+                    p.CreatedAt,
+                    p.UpdatedAt
+                }).ToList();
+
+                // Log para debugging
+                foreach (var product in result.Where(p => p.CategoryName == "Sin categoría"))
+                {
+                    _logger.LogWarning($"Producto sin categoría: ID={product.ProductId}, Name={product.Name}, CategoryId={product.CategoryId}");
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener los productos");
+                return StatusCode(500, new { message = "Error al obtener los productos", error = ex.Message });
+            }
         }
 
         // GET: api/products/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        public async Task<ActionResult<object>> GetProduct(int id)
         {
             var product = await _context.Products
                 .Include(p => p.Category)
-                .FirstOrDefaultAsync(p => p.ProductId == id);
+                .Where(p => p.ProductId == id)
+                .Select(p => new {
+                    p.ProductId,
+                    p.Name,
+                    p.Description,
+                    p.CategoryId,
+                    CategoryName = p.Category != null ? p.Category.Name : "Sin categoría",
+                    p.ImageUrl,
+                    p.Price,
+                    p.Stock,
+                    p.CreatedAt,
+                    p.UpdatedAt
+                })
+                .FirstOrDefaultAsync();
 
             if (product == null)
             {
@@ -51,22 +96,14 @@ namespace ProductService.Controllers
 
         // POST: api/products
         [HttpPost]
-        public async Task<ActionResult<Product>> CreateProduct(Product product)
+        public async Task<ActionResult<object>> CreateProduct(Product product)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(new 
-                    { 
-                        message = "Datos del producto inválidos",
-                        errors = ModelState.Values
-                            .SelectMany(v => v.Errors)
-                            .Select(e => e.ErrorMessage)
-                    });
+                    return BadRequest(ModelState);
                 }
-
-                _logger.LogInformation("Creando producto: {@Product}", product);
 
                 product.CreatedAt = DateTime.UtcNow;
                 product.UpdatedAt = DateTime.UtcNow;
@@ -76,33 +113,32 @@ namespace ProductService.Controllers
 
                 var createdProduct = await _context.Products
                     .Include(p => p.Category)
-                    .FirstOrDefaultAsync(p => p.ProductId == product.ProductId);
+                    .Where(p => p.ProductId == product.ProductId)
+                    .Select(p => new {
+                        p.ProductId,
+                        p.Name,
+                        p.Description,
+                        p.CategoryId,
+                        CategoryName = p.Category != null ? p.Category.Name : "Sin categoría",
+                        p.ImageUrl,
+                        p.Price,
+                        p.Stock,
+                        p.CreatedAt,
+                        p.UpdatedAt
+                    })
+                    .FirstOrDefaultAsync();
 
                 return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, createdProduct);
             }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex, "Error al guardar el producto en la base de datos: {@Product}", product);
-                return StatusCode(500, new { 
-                    message = "Error al crear el producto en la base de datos",
-                    error = ex.InnerException?.Message ?? ex.Message,
-                    details = ex.InnerException?.ToString()
-                });
-            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inesperado al crear el producto: {@Product}", product);
-                return StatusCode(500, new { 
-                    message = "Error inesperado al crear el producto",
-                    error = ex.Message,
-                    details = ex.ToString()
-                });
+                return StatusCode(500, new { message = "Error al crear el producto", error = ex.Message });
             }
         }
 
         // PUT: api/products/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, Product product)
+        public async Task<ActionResult<object>> UpdateProduct(int id, Product product)
         {
             if (id != product.ProductId)
             {
@@ -126,46 +162,68 @@ namespace ProductService.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-                return Ok(existingProduct);
+
+                var updatedProduct = await _context.Products
+                    .Include(p => p.Category)
+                    .Where(p => p.ProductId == id)
+                    .Select(p => new {
+                        p.ProductId,
+                        p.Name,
+                        p.Description,
+                        p.CategoryId,
+                        CategoryName = p.Category != null ? p.Category.Name : "Sin categoría",
+                        p.ImageUrl,
+                        p.Price,
+                        p.Stock,
+                        p.CreatedAt,
+                        p.UpdatedAt
+                    })
+                    .FirstOrDefaultAsync();
+
+                return Ok(updatedProduct);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                throw;
+                return StatusCode(500, new { message = "Error al actualizar el producto", error = ex.Message });
             }
         }
 
         // PUT: api/products/5/stock
         [HttpPut("{id}/stock")]
-        public async Task<IActionResult> UpdateStock(int id, [FromBody] UpdateStockRequest request)
+        public async Task<ActionResult<object>> UpdateStock(int id, [FromBody] UpdateStockRequest request)
         {
-            _logger.LogInformation($"Actualizando stock del producto {id} a {request.Stock}");
-
             var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
-                _logger.LogWarning($"No se encontró el producto con ID {id}");
                 return NotFound(new { message = $"No se encontró el producto con ID {id}" });
             }
 
-            try
-            {
-                _logger.LogInformation($"Stock actual: {product.Stock}, Nuevo stock: {request.Stock}");
+            try {
                 product.Stock = request.Stock;
                 product.UpdatedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
-                _logger.LogInformation($"Stock actualizado correctamente para el producto {id}");
 
-                return Ok(await _context.Products
+                var updatedProduct = await _context.Products
                     .Include(p => p.Category)
-                    .FirstOrDefaultAsync(p => p.ProductId == id));
+                    .Where(p => p.ProductId == id)
+                    .Select(p => new {
+                        p.ProductId,
+                        p.Name,
+                        p.Description,
+                        p.CategoryId,
+                        CategoryName = p.Category != null ? p.Category.Name : "Sin categoría",
+                        p.ImageUrl,
+                        p.Price,
+                        p.Stock,
+                        p.CreatedAt,
+                        p.UpdatedAt
+                    })
+                    .FirstOrDefaultAsync();
+
+                return Ok(updatedProduct);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al actualizar el stock del producto {id}");
                 return StatusCode(500, new { message = "Error al actualizar el stock", error = ex.Message });
             }
         }

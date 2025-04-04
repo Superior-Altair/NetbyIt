@@ -5,6 +5,14 @@
       "PackagePath": "staticwebassets\\images\\products\\39390754-7ceb-459e-8c58-da284cbc4ad0_cola.jpg"
     },
     {
+      "Id": "D:\\NetbyIt\\backend\\ProductService\\wwwroot\\images\\products\\53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg",
+      "PackagePath": "staticwebassets\\images\\products\\53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg"
+    },
+    {
+      "Id": "D:\\NetbyIt\\backend\\ProductService\\wwwroot\\images\\products\\9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg",
+      "PackagePath": "staticwebassets\\images\\products\\9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg"
+    },
+    {
       "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.ProductService.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
     },

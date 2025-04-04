@@ -165,3 +165,4 @@ D:\NetbyIt\backend\ProductService\obj\Debug\net9.0\ProductService.pdb
 D:\NetbyIt\backend\ProductService\obj\Debug\net9.0\ProductService.genruntimeconfig.cache
 D:\NetbyIt\backend\ProductService\obj\Debug\net9.0\ref\ProductService.dll
 D:\NetbyIt\backend\ProductService\bin\Debug\net9.0\ProductService.staticwebassets.runtime.json
+D:\NetbyIt\backend\ProductService\obj\Debug\net9.0\ProductService.sourcelink.json

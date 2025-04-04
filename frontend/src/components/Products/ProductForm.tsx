@@ -8,7 +8,6 @@ import {
     Select,
     MenuItem,
     Box,
-    Typography,
     CircularProgress,
     SelectChangeEvent,
 } from '@mui/material';
@@ -16,27 +15,30 @@ import { Product } from '../../types/models';
 import { CategoryService } from '../../services/CategoryService';
 import { ProductService } from '../../services/ProductService';
 
+type ProductFormData = Omit<Product, 'productId' | 'createdAt' | 'updatedAt'>;
+
 interface ProductFormProps {
-    onSubmit: (product: Omit<Product, 'productId' | 'createdAt' | 'updatedAt'>) => Promise<Product>;
+    onSubmit: (product: ProductFormData) => Promise<Product>;
     title: string;
     initialData?: Product;
 }
 
-const ProductForm: React.FC<ProductFormProps> = ({
-    onSubmit,
-    title,
-    initialData,
-}) => {
-    const [formData, setFormData] = useState<Omit<Product, 'productId' | 'createdAt' | 'updatedAt'>>({
+interface Category {
+    categoryId: number;
+    name: string;
+}
+
+const ProductForm: React.FC<ProductFormProps> = ({ onSubmit, title, initialData }) => {
+    const [formData, setFormData] = useState<ProductFormData>({
         name: initialData?.name || '',
         description: initialData?.description || '',
-        categoryId: initialData?.categoryId || 1,
+        categoryId: initialData?.categoryId || 0,
         imageUrl: initialData?.imageUrl || '',
         price: initialData?.price || 0,
         stock: initialData?.stock || 0,
     });
 
-    const [categories, setCategories] = useState<any[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imageUrl || null);
@@ -46,6 +48,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
             try {
                 const data = await CategoryService.getAll();
                 setCategories(data);
+                if (data.length > 0 && !initialData) {
+                    setFormData(prev => ({ ...prev, categoryId: data[0].categoryId }));
+                }
             } catch (error) {
                 console.error('Error al cargar categorías:', error);
             } finally {
@@ -54,29 +59,26 @@ const ProductForm: React.FC<ProductFormProps> = ({
         };
 
         loadCategories();
-    }, []);
+    }, [initialData]);
 
     const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: name === 'price' || name === 'stock'
-                ? Number(value)
-                : value
+            [name]: name === 'price' || name === 'stock' ? Number(value) : value
         }));
     };
 
     const handleSelectChange = (e: SelectChangeEvent<number>) => {
-        const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: Number(value)
+            categoryId: Number(e.target.value)
         }));
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
+        const file = e.target.files?.[0];
+        if (file) {
             setSelectedImage(file);
             setImagePreview(URL.createObjectURL(file));
         }
@@ -84,19 +86,16 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
         try {
-            // Primero enviamos los datos del producto
             const response = await onSubmit(formData);
-
-            // Si hay una imagen seleccionada, la subimos
             if (selectedImage && response.productId) {
-                const formData = new FormData();
-                formData.append('image', selectedImage);
-                await ProductService.uploadImage(response.productId, formData);
+                const imageData = new FormData();
+                imageData.append('image', selectedImage);
+                await ProductService.uploadImage(response.productId, imageData);
             }
         } catch (error) {
             console.error('Error al guardar el producto:', error);
+            throw error;
         }
     };
 

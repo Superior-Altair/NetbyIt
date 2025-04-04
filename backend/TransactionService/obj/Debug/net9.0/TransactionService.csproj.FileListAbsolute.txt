@@ -164,3 +164,4 @@ D:\NetbyIt\backend\TransactionService\obj\Debug\net9.0\refint\TransactionService
 D:\NetbyIt\backend\TransactionService\obj\Debug\net9.0\TransactionService.pdb
 D:\NetbyIt\backend\TransactionService\obj\Debug\net9.0\TransactionService.genruntimeconfig.cache
 D:\NetbyIt\backend\TransactionService\obj\Debug\net9.0\ref\TransactionService.dll
+D:\NetbyIt\backend\TransactionService\obj\Debug\net9.0\TransactionService.sourcelink.json

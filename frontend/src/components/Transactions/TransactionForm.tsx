@@ -29,10 +29,12 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     title,
     initialData,
 }) => {
-    const [formData, setFormData] = useState<Omit<Transaction, 'transactionId' | 'createdAt' | 'transactionType'>>({
+    const [formData, setFormData] = useState<Omit<Transaction, 'transactionId' | 'createdAt'>>({
         transactionDate: new Date().toISOString().split('T')[0],
         transactionTypeId: initialData?.transactionTypeId || 0,
+        transactionTypeName: initialData?.transactionTypeName || '',
         productId: initialData?.productId || 0,
+        productName: initialData?.productName || '',
         quantity: initialData?.quantity || 1,
         unitPrice: initialData?.unitPrice || 0,
         totalPrice: initialData?.totalPrice || 0,
@@ -48,15 +50,13 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     useEffect(() => {
         const loadData = async () => {
             try {
-                // Inicializar tipos de transacción y cargar productos
                 const [productsData, typesData] = await Promise.all([
                     ProductService.getAll(),
-                    TransactionService.initializeTransactionTypes() // Cambiado de getTransactionTypes a initializeTransactionTypes
+                    TransactionService.initializeTransactionTypes()
                 ]);
                 setProducts(productsData);
                 setTransactionTypes(typesData);
 
-                // Si hay productos y no hay un producto seleccionado, seleccionar el primero
                 if (productsData.length > 0 && (!initialData || !initialData.productId)) {
                     const firstProduct = productsData[0];
                     setSelectedProduct(firstProduct);
@@ -67,7 +67,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                     }));
                 }
 
-                // Si hay tipos de transacción, seleccionar el tipo "Venta" por defecto
                 if (typesData.length > 0) {
                     const ventaType = typesData.find(t => t.type === 'OUT') || typesData[0];
                     setSelectedType(ventaType);
@@ -77,7 +76,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                     }));
                 }
 
-                // Si hay datos iniciales, cargar el producto y tipo seleccionados
                 if (initialData) {
                     const product = productsData.find(p => p.productId === initialData.productId);
                     const type = typesData.find(t => t.transactionTypeId === initialData.transactionTypeId);
@@ -102,18 +100,17 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             return;
         }
 
-        // Validaciones básicas
         if (formData.quantity <= 0) {
             alert('La cantidad debe ser mayor a 0.');
             return;
         }
+
         if (formData.unitPrice < 0) {
             alert('El precio unitario no puede ser negativo.');
             return;
         }
 
-        // Validaciones específicas según el tipo de transacción
-        if (selectedType.type === 'OUT') { // Venta
+        if (selectedType.type === 'OUT') {
             if (formData.quantity > selectedProduct.stock) {
                 alert(`No hay suficiente stock disponible. Stock actual: ${selectedProduct.stock}`);
                 return;
@@ -126,7 +123,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             }
         }
 
-        // Procesar los datos
         const processedData = {
             ...formData,
             transactionTypeId: Number(formData.transactionTypeId),
@@ -141,10 +137,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         
-        // Validar valores numéricos
         if ((name === 'quantity' || name === 'unitPrice') && value !== '') {
             const numValue = Number(value);
-            if (numValue < 0) return; // No permitir valores negativos
+            if (numValue < 0) return;
         }
 
         setFormData(prev => {
@@ -155,7 +150,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                     : value,
             };
 
-            // Actualizar totalPrice cuando cambie quantity o unitPrice
             if (name === 'quantity' || name === 'unitPrice') {
                 const quantity = name === 'quantity' ? Number(value) : prev.quantity;
                 const unitPrice = name === 'unitPrice' ? Number(value) : prev.unitPrice;
@@ -173,11 +167,11 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         if (name === 'productId') {
             const product = products.find(p => p.productId === numValue);
             setSelectedProduct(product || null);
-            // Actualizar el precio unitario al precio sugerido del producto
             if (product) {
                 setFormData(prev => ({
                     ...prev,
                     [name]: numValue,
+                    productName: product.name,
                     unitPrice: product.price
                 }));
             }
@@ -186,7 +180,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             setSelectedType(type || null);
             setFormData(prev => ({
                 ...prev,
-                [name]: numValue
+                [name]: numValue,
+                transactionTypeName: type?.name || ''
             }));
         }
     };
@@ -307,9 +302,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                     type="number"
                     value={formData.totalPrice}
                     disabled
-                    InputProps={{
-                        readOnly: true,
-                    }}
+                    InputProps={{ readOnly: true }}
                 />
 
                 <TextField

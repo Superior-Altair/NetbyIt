@@ -7,8 +7,13 @@ import {
 } from '@mui/material';
 import { Category } from '../../services/CategoryService';
 
+type CategoryFormData = {
+    name: string;
+    description: string;
+};
+
 interface CategoryFormProps {
-    onSubmit: (category: Omit<Category, 'categoryId'>) => void;
+    onSubmit: (category: CategoryFormData) => void;
     title?: string;
     initialData?: Category;
 }
@@ -18,14 +23,31 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
     title = 'Nueva Categoría',
     initialData,
 }) => {
-    const [formData, setFormData] = useState<Omit<Category, 'categoryId'>>({
+    const [formData, setFormData] = useState<CategoryFormData>({
         name: initialData?.name || '',
         description: initialData?.description || '',
     });
 
+    const [errors, setErrors] = useState({
+        name: false,
+    });
+
+    const validateForm = (): boolean => {
+        const newErrors = {
+            name: formData.name.trim().length === 0,
+        };
+        setErrors(newErrors);
+        return !Object.values(newErrors).some(error => error);
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(formData);
+        if (validateForm()) {
+            onSubmit({
+                name: formData.name.trim(),
+                description: formData.description.trim(),
+            });
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,6 +56,12 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
             ...prev,
             [name]: value,
         }));
+        if (errors[name as keyof typeof errors]) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: false,
+            }));
+        }
     };
 
     return (
@@ -46,6 +74,9 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
                     value={formData.name}
                     onChange={handleChange}
                     required
+                    error={errors.name}
+                    helperText={errors.name ? 'El nombre es requerido' : ''}
+                    autoFocus
                 />
                 <TextField
                     fullWidth

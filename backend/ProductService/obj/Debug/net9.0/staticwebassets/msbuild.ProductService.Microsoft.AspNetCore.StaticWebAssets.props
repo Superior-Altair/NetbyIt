@@ -18,5 +18,41 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\products\39390754-7ceb-459e-8c58-da284cbc4ad0_cola.jpg'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\products\53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg'))">
+      <SourceType>Package</SourceType>
+      <SourceId>ProductService</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/ProductService</BasePath>
+      <RelativePath>images/products/53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>45pe26a7qe</Fingerprint>
+      <Integrity>OA+GvLfFk1DghXNQSyI0200ckq3DlOKkM6lrvRtcsOs=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\products\53270ee5-7b0e-4392-9580-874b81bc6408_sprite-personal-300ml.jpg'))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\products\9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg'))">
+      <SourceType>Package</SourceType>
+      <SourceId>ProductService</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/ProductService</BasePath>
+      <RelativePath>images/products/9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>x3lj9ybfsw</Fingerprint>
+      <Integrity>ndLl15vfPGB0FXluUxReRiussOR84Pj12mUAZGrHMNE=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\products\9f330691-bdf3-418e-930d-b3ae0c368ac8_ruffles-papas-natural.jpg'))</OriginalItemSpec>
+    </StaticWebAsset>
   </ItemGroup>
 </Project>

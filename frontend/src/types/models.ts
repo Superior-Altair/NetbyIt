@@ -3,11 +3,7 @@ export interface Product {
     name: string;
     description?: string;
     categoryId: number;
-    category?: {
-        categoryId: number;
-        name: string;
-        description?: string;
-    };
+    categoryName?: string;
     imageUrl?: string;
     price: number;
     stock: number;
@@ -19,21 +15,12 @@ export interface Transaction {
     transactionId: number;
     transactionDate: string;
     transactionTypeId: number;
+    transactionTypeName: string;
     productId: number;
+    productName: string;
     quantity: number;
     unitPrice: number;
     totalPrice: number;
     details?: string;
     createdAt: string;
-    transactionType?: {
-        transactionTypeId: number;
-        name: string;
-        type: 'IN' | 'OUT';
-    };
-    product?: {
-        productId: number;
-        name: string;
-        description?: string;
-        price: number;
-    };
 } 

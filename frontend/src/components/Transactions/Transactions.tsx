@@ -16,7 +16,10 @@ import {
     DialogTitle,
     DialogContent,
     Alert,
-    Snackbar,
+    Button,
+    TablePagination,
+    DialogActions,
+    DialogContentText,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -24,23 +27,22 @@ import { TransactionService } from '../../services/TransactionService';
 import { Transaction } from '../../types/models';
 import TransactionForm from './TransactionForm';
 import FilterBar from '../common/FilterBar';
+import { useSnackbar } from 'notistack';
 
 export const Transactions: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState<Transaction | undefined>();
-    const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
-        open: false,
-        message: '',
-        severity: 'success'
-    });
-
-    // Estados para los filtros
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);
     const [searchText, setSearchText] = useState('');
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
     const [selectedType, setSelectedType] = useState<string>('');
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const queryClient = useQueryClient();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     const { data: transactions = [], isLoading, error } = useQuery({
         queryKey: ['transactions'],
@@ -48,53 +50,54 @@ export const Transactions: React.FC = () => {
         retry: 1
     });
 
-    // Obtener tipos de transacción únicos
-    const transactionTypes = useMemo(() => {
-        const types = new Set(transactions.map(t => t.transactionType?.name || ''));
+    const transactionTypesMemo = useMemo(() => {
+        const types = new Set(transactions.map(t => t.transactionTypeName));
         return Array.from(types).map(type => ({
             value: type,
             label: type
         }));
     }, [transactions]);
 
-    // Filtrar transacciones
     const filteredTransactions = useMemo(() => {
         return transactions.filter(transaction => {
-            // Filtro por texto (producto o detalles)
             const searchMatch = 
                 searchText === '' ||
-                transaction.product?.name.toLowerCase().includes(searchText.toLowerCase()) ||
+                transaction.productName.toLowerCase().includes(searchText.toLowerCase()) ||
                 transaction.details?.toLowerCase().includes(searchText.toLowerCase());
 
-            // Filtro por fecha desde
             const fromMatch = 
                 !dateFrom ||
                 new Date(transaction.transactionDate) >= new Date(dateFrom);
 
-            // Filtro por fecha hasta
             const toMatch = 
                 !dateTo ||
                 new Date(transaction.transactionDate) <= new Date(dateTo);
 
-            // Filtro por tipo
             const typeMatch = 
                 !selectedType ||
-                transaction.transactionType?.name === selectedType;
+                transaction.transactionTypeName === selectedType;
 
             return searchMatch && fromMatch && toMatch && typeMatch;
         });
     }, [transactions, searchText, dateFrom, dateTo, selectedType]);
 
+    const paginatedTransactions = filteredTransactions.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+    );
+
     const createMutation = useMutation({
         mutationFn: TransactionService.create,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['transactions'] });
-            queryClient.invalidateQueries({ queryKey: ['products'] });
+            queryClient.invalidateQueries({ queryKey: ['transactions', 'products'] });
             handleClose();
-            showSnackbar('Transacción creada exitosamente', 'success');
+            enqueueSnackbar('Transacción creada exitosamente', { variant: 'success' });
         },
         onError: (error: any) => {
-            showSnackbar(error.response?.data?.message || 'Error al crear la transacción', 'error');
+            enqueueSnackbar(error.response?.data?.message || 'Error al crear la transacción', { 
+                variant: 'error',
+                action: <Button color="inherit" size="small" onClick={() => closeSnackbar()}>Cerrar</Button>
+            });
         }
     });
 
@@ -102,44 +105,44 @@ export const Transactions: React.FC = () => {
         mutationFn: ({ id, transaction }: { id: number, transaction: Partial<Transaction> }) =>
             TransactionService.update(id, transaction),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['transactions'] });
-            queryClient.invalidateQueries({ queryKey: ['products'] });
+            queryClient.invalidateQueries({ queryKey: ['transactions', 'products'] });
             handleClose();
-            showSnackbar('Transacción actualizada exitosamente', 'success');
+            enqueueSnackbar('Transacción actualizada exitosamente', { variant: 'success' });
         },
         onError: (error: any) => {
-            showSnackbar(error.response?.data?.message || 'Error al actualizar la transacción', 'error');
+            enqueueSnackbar(error.response?.data?.message || 'Error al actualizar la transacción', { 
+                variant: 'error',
+                action: <Button color="inherit" size="small" onClick={() => closeSnackbar()}>Cerrar</Button>
+            });
         }
     });
 
     const deleteMutation = useMutation({
         mutationFn: TransactionService.delete,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['transactions'] });
-            queryClient.invalidateQueries({ queryKey: ['products'] });
-            showSnackbar('Transacción eliminada exitosamente', 'success');
+            queryClient.invalidateQueries({ queryKey: ['transactions', 'products'] });
+            enqueueSnackbar('Transacción eliminada exitosamente', { variant: 'success' });
         },
         onError: (error: any) => {
-            showSnackbar(error.response?.data?.message || 'Error al eliminar la transacción', 'error');
+            enqueueSnackbar(error.response?.data?.message || 'Error al eliminar la transacción', { 
+                variant: 'error',
+                action: <Button color="inherit" size="small" onClick={() => closeSnackbar()}>Cerrar</Button>
+            });
         }
     });
 
     const handleSubmit = async (transaction: Omit<Transaction, 'transactionId' | 'createdAt' | 'transactionType'>): Promise<Transaction> => {
         try {
-            let response: Transaction;
             if (selectedTransaction) {
-                response = await updateMutation.mutateAsync({
+                return await updateMutation.mutateAsync({
                     id: selectedTransaction.transactionId,
                     transaction: {
                         ...transaction,
                         transactionId: selectedTransaction.transactionId
                     }
                 });
-            } else {
-                response = await createMutation.mutateAsync(transaction);
             }
-            handleClose();
-            return response;
+            return await createMutation.mutateAsync(transaction);
         } catch (error) {
             console.error('Error en la operación:', error);
             throw error;
@@ -151,27 +154,27 @@ export const Transactions: React.FC = () => {
         setOpen(true);
     };
 
-    const handleDelete = async (id: number) => {
-        if (window.confirm('¿Está seguro de que desea eliminar esta transacción?')) {
-            try {
-                await deleteMutation.mutateAsync(id);
-            } catch (error) {
-                console.error('Error al eliminar:', error);
-            }
+    const handleDelete = (transaction: Transaction) => {
+        setTransactionToDelete(transaction);
+        setDeleteConfirmOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!transactionToDelete) return;
+
+        try {
+            await deleteMutation.mutateAsync(transactionToDelete.transactionId);
+        } catch (error) {
+            console.error('Error al eliminar:', error);
+        } finally {
+            setDeleteConfirmOpen(false);
+            setTransactionToDelete(null);
         }
     };
 
     const handleClose = () => {
         setOpen(false);
         setSelectedTransaction(undefined);
-    };
-
-    const showSnackbar = (message: string, severity: 'success' | 'error') => {
-        setSnackbar({ open: true, message, severity });
-    };
-
-    const handleCloseSnackbar = () => {
-        setSnackbar(prev => ({ ...prev, open: false }));
     };
 
     const handleClearFilters = () => {
@@ -202,7 +205,7 @@ export const Transactions: React.FC = () => {
     return (
         <Container>
             <Box sx={{ mt: 4, mb: 2 }}>
-                <Typography variant="h4" component="h1" gutterBottom>
+                <Typography variant="h4" gutterBottom>
                     Transacciones
                 </Typography>
                 <TransactionForm
@@ -218,14 +221,12 @@ export const Transactions: React.FC = () => {
                 onDateFromChange={setDateFrom}
                 dateTo={dateTo}
                 onDateToChange={setDateTo}
-                filterOptions={[
-                    {
-                        value: selectedType,
-                        options: transactionTypes,
-                        label: 'Tipo',
-                        onChange: (value) => setSelectedType(value.toString())
-                    }
-                ]}
+                filterOptions={[{
+                    value: selectedType,
+                    options: transactionTypesMemo,
+                    label: 'Tipo',
+                    onChange: (value) => setSelectedType(value.toString())
+                }]}
                 onClearFilters={handleClearFilters}
             />
 
@@ -249,30 +250,22 @@ export const Transactions: React.FC = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredTransactions.map((transaction) => (
+                            {paginatedTransactions.map((transaction) => (
                                 <TableRow key={transaction.transactionId}>
                                     <TableCell>
                                         {new Date(transaction.transactionDate).toLocaleDateString()}
                                     </TableCell>
-                                    <TableCell>
-                                        {transaction.transactionType?.name}
-                                    </TableCell>
-                                    <TableCell>
-                                        {transaction.product?.name}
-                                    </TableCell>
+                                    <TableCell>{transaction.transactionTypeName}</TableCell>
+                                    <TableCell>{transaction.productName}</TableCell>
                                     <TableCell>{transaction.quantity}</TableCell>
+                                    <TableCell>${transaction.unitPrice.toFixed(2)}</TableCell>
+                                    <TableCell>${transaction.totalPrice.toFixed(2)}</TableCell>
+                                    <TableCell>{transaction.details || '-'}</TableCell>
                                     <TableCell>
-                                        ${transaction.unitPrice.toFixed(2)}
-                                    </TableCell>
-                                    <TableCell>
-                                        ${transaction.totalPrice.toFixed(2)}
-                                    </TableCell>
-                                    <TableCell>{transaction.details}</TableCell>
-                                    <TableCell>
-                                        <IconButton onClick={() => handleEdit(transaction)}>
+                                        <IconButton onClick={() => handleEdit(transaction)} title="Editar transacción">
                                             <EditIcon />
                                         </IconButton>
-                                        <IconButton onClick={() => handleDelete(transaction.transactionId)}>
+                                        <IconButton onClick={() => handleDelete(transaction)} title="Eliminar transacción">
                                             <DeleteIcon />
                                         </IconButton>
                                     </TableCell>
@@ -280,6 +273,20 @@ export const Transactions: React.FC = () => {
                             ))}
                         </TableBody>
                     </Table>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={filteredTransactions.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={(_, newPage) => setPage(newPage)}
+                        onRowsPerPageChange={(e) => {
+                            setRowsPerPage(parseInt(e.target.value, 10));
+                            setPage(0);
+                        }}
+                        labelRowsPerPage="Filas por página:"
+                        labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+                    />
                 </TableContainer>
             )}
 
@@ -294,16 +301,40 @@ export const Transactions: React.FC = () => {
                 </DialogContent>
             </Dialog>
 
-            <Snackbar
-                open={snackbar.open}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            <Dialog
+                open={deleteConfirmOpen}
+                onClose={() => setDeleteConfirmOpen(false)}
             >
-                <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
+                <DialogTitle>Confirmar eliminación</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {transactionToDelete && (
+                            <>
+                                ¿Está seguro de que desea eliminar esta transacción?
+                                <Box sx={{ mt: 2 }}>
+                                    <Typography variant="subtitle2">
+                                        Detalles de la transacción:
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        • Tipo: {transactionToDelete.transactionTypeName}<br />
+                                        • Producto: {transactionToDelete.productName}<br />
+                                        • Cantidad: {transactionToDelete.quantity}<br />
+                                        • Fecha: {new Date(transactionToDelete.transactionDate).toLocaleDateString()}
+                                    </Typography>
+                                </Box>
+                            </>
+                        )}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteConfirmOpen(false)}>
+                        Cancelar
+                    </Button>
+                    <Button onClick={handleConfirmDelete} color="error" autoFocus>
+                        Eliminar
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 }; 

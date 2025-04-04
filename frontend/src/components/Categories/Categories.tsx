@@ -11,16 +11,19 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
+    Button,
 } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { CategoryService, Category } from '../../services/CategoryService';
+import { useSnackbar } from 'notistack';
 import CategoryForm from './CategoryForm';
 
 export const Categories: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<Category | undefined>();
     const queryClient = useQueryClient();
+    const { enqueueSnackbar } = useSnackbar();
 
     const { data: categories = [], isLoading } = useQuery({
         queryKey: ['categories'],
@@ -32,6 +35,12 @@ export const Categories: React.FC = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['categories'] });
             handleClose();
+            enqueueSnackbar('Categoría creada exitosamente', { variant: 'success' });
+        },
+        onError: (error: any) => {
+            enqueueSnackbar(error.response?.data?.message || 'Error al crear la categoría', { 
+                variant: 'error' 
+            });
         }
     });
 
@@ -41,6 +50,12 @@ export const Categories: React.FC = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['categories'] });
             handleClose();
+            enqueueSnackbar('Categoría actualizada exitosamente', { variant: 'success' });
+        },
+        onError: (error: any) => {
+            enqueueSnackbar(error.response?.data?.message || 'Error al actualizar la categoría', { 
+                variant: 'error' 
+            });
         }
     });
 
@@ -48,20 +63,32 @@ export const Categories: React.FC = () => {
         mutationFn: CategoryService.delete,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['categories'] });
+            enqueueSnackbar('Categoría eliminada exitosamente', { variant: 'success' });
+        },
+        onError: (error: any) => {
+            const errorMessage = error.response?.data?.message?.includes('productos')
+                ? 'No se puede eliminar la categoría porque tiene productos asociados'
+                : error.response?.data?.message || 'Error al eliminar la categoría';
+            
+            enqueueSnackbar(errorMessage, { variant: 'error' });
         }
     });
 
     const handleSubmit = async (category: Omit<Category, 'categoryId'>) => {
-        if (selectedCategory) {
-            await updateMutation.mutateAsync({
-                id: selectedCategory.categoryId,
-                category: {
-                    ...category,
-                    categoryId: selectedCategory.categoryId
-                }
-            });
-        } else {
-            await createMutation.mutateAsync(category);
+        try {
+            if (selectedCategory) {
+                await updateMutation.mutateAsync({
+                    id: selectedCategory.categoryId,
+                    category: {
+                        ...category,
+                        categoryId: selectedCategory.categoryId
+                    }
+                });
+            } else {
+                await createMutation.mutateAsync(category);
+            }
+        } catch (error) {
+            console.error('Error al guardar la categoría:', error);
         }
     };
 
@@ -91,29 +118,49 @@ export const Categories: React.FC = () => {
 
     return (
         <Container>
-            <Box sx={{ mt: 4, mb: 2 }}>
-                <Typography variant="h4" component="h1" gutterBottom>
+            <Box sx={{ mt: 4, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h4" component="h1">
                     Categorías
                 </Typography>
-                <CategoryForm
-                    onSubmit={handleSubmit}
-                    title="Nueva Categoría"
-                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    onClick={() => setOpen(true)}
+                >
+                    Nueva Categoría
+                </Button>
             </Box>
 
             <List>
                 {categories.map((category) => (
                     <ListItem
                         key={category.categoryId}
+                        sx={{
+                            bgcolor: 'background.paper',
+                            mb: 1,
+                            borderRadius: 1,
+                            '&:hover': { bgcolor: 'action.hover' }
+                        }}
                         secondaryAction={
-                            <>
-                                <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(category)}>
+                            <Box>
+                                <IconButton
+                                    edge="end"
+                                    aria-label="edit"
+                                    onClick={() => handleEdit(category)}
+                                    sx={{ mr: 1 }}
+                                >
                                     <EditIcon />
                                 </IconButton>
-                                <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(category.categoryId)}>
+                                <IconButton
+                                    edge="end"
+                                    aria-label="delete"
+                                    onClick={() => handleDelete(category.categoryId)}
+                                    color="error"
+                                >
                                     <DeleteIcon />
                                 </IconButton>
-                            </>
+                            </Box>
                         }
                     >
                         <ListItemText
@@ -124,14 +171,23 @@ export const Categories: React.FC = () => {
                 ))}
             </List>
 
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Editar Categoría</DialogTitle>
+            <Dialog 
+                open={open} 
+                onClose={handleClose}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>
+                    {selectedCategory ? 'Editar Categoría' : 'Nueva Categoría'}
+                </DialogTitle>
                 <DialogContent>
-                    <CategoryForm
-                        onSubmit={handleSubmit}
-                        initialData={selectedCategory}
-                        title="Actualizar"
-                    />
+                    <Box sx={{ mt: 2 }}>
+                        <CategoryForm
+                            onSubmit={handleSubmit}
+                            initialData={selectedCategory}
+                            title={selectedCategory ? 'Actualizar' : 'Crear'}
+                        />
+                    </Box>
                 </DialogContent>
             </Dialog>
         </Container>

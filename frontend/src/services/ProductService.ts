@@ -10,7 +10,6 @@ const api = axios.create({
     },
 });
 
-// Agregar interceptor para ver los datos de las peticiones
 api.interceptors.request.use(request => {
     console.log('Request:', JSON.stringify({
         url: request.url,
@@ -21,7 +20,6 @@ api.interceptors.request.use(request => {
     return request;
 });
 
-// Agregar interceptor para ver las respuestas
 api.interceptors.response.use(
     response => {
         console.log('Response:', JSON.stringify({
@@ -44,8 +42,13 @@ api.interceptors.response.use(
 
 export const ProductService = {
     getAll: async (): Promise<Product[]> => {
-        const response = await api.get('/api/products');
-        return response.data;
+        try {
+            const response = await api.get('/api/products');
+            return response.data;
+        } catch (error: any) {
+            console.error('Error al obtener productos:', error);
+            throw error;
+        }
     },
 
     getById: async (id: number): Promise<Product> => {
@@ -53,14 +56,28 @@ export const ProductService = {
         return response.data;
     },
 
-    create: async (product: Omit<Product, 'productId' | 'createdAt' | 'updatedAt' | 'category'>): Promise<Product> => {
-        console.log('Creating product with data:', JSON.stringify(product, null, 2));
-        const response = await api.post('/api/products', product);
+    create: async (product: Omit<Product, 'productId' | 'createdAt' | 'updatedAt'>): Promise<Product> => {
+        const response = await api.post('/api/products', {
+            name: product.name,
+            description: product.description,
+            categoryId: product.categoryId,
+            imageUrl: product.imageUrl,
+            price: product.price,
+            stock: product.stock
+        });
         return response.data;
     },
 
     update: async (id: number, product: Partial<Product>): Promise<Product> => {
-        const response = await api.put(`/api/products/${id}`, product);
+        const updateData = {
+            name: product.name,
+            description: product.description,
+            categoryId: product.categoryId,
+            imageUrl: product.imageUrl,
+            price: product.price,
+            stock: product.stock
+        };
+        const response = await api.put(`/api/products/${id}`, updateData);
         return response.data;
     },
 
@@ -76,4 +93,4 @@ export const ProductService = {
         });
         return response.data;
     }
-}; 
+};
