@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\backend",
+    "\\backend\\ProductService",
+    "\\backend\\ProductService\\Controllers",
+    "\\backend\\ProductService\\Models"
+  ],
+  "SelectedNode": "\\backend\\ProductService\\Models\\Category.cs",
+  "PreviewInSolutionExplorer": false
+}

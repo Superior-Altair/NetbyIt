@@ -1,0 +1,29 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\NetbyIt\\backend\\ProductService\\wwwroot\\images\\products\\39390754-7ceb-459e-8c58-da284cbc4ad0_cola.jpg",
+      "PackagePath": "staticwebassets\\images\\products\\39390754-7ceb-459e-8c58-da284cbc4ad0_cola.jpg"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.ProductService.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.ProductService.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.build.ProductService.props",
+      "PackagePath": "build\\ProductService.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.buildMultiTargeting.ProductService.props",
+      "PackagePath": "buildMultiTargeting\\ProductService.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.buildTransitive.ProductService.props",
+      "PackagePath": "buildTransitive\\ProductService.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

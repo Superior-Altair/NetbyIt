@@ -1,0 +1,125 @@
+{
+  "Version": 1,
+  "Hash": "NfBsvjH9oKq0gKNmJohJ5jwlbHkQ1r3biomB+gyLCkI=",
+  "Source": "ProductService",
+  "BasePath": "_content/ProductService",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "ProductService\\wwwroot",
+      "Source": "ProductService",
+      "ContentRoot": "D:\\NetbyIt\\backend\\ProductService\\wwwroot\\",
+      "BasePath": "_content/ProductService",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "D:\\NetbyIt\\backend\\ProductService\\wwwroot\\images\\products\\39390754-7ceb-459e-8c58-da284cbc4ad0_cola.jpg",
+      "SourceId": "ProductService",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\NetbyIt\\backend\\ProductService\\wwwroot\\",
+      "BasePath": "_content/ProductService",
+      "RelativePath": "images/products/39390754-7ceb-459e-8c58-da284cbc4ad0_cola#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "j18tdglzvp",
+      "Integrity": "CbVxECmLAIqGpX9t2kdg2puISo5u9mCgVgLdR/o8kr4=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\products\\39390754-7ceb-459e-8c58-da284cbc4ad0_cola.jpg"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "images/products/39390754-7ceb-459e-8c58-da284cbc4ad0_cola.j18tdglzvp.jpg",
+      "AssetFile": "D:\\NetbyIt\\backend\\ProductService\\wwwroot\\images\\products\\39390754-7ceb-459e-8c58-da284cbc4ad0_cola.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3630823"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"CbVxECmLAIqGpX9t2kdg2puISo5u9mCgVgLdR/o8kr4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 03 Apr 2025 19:15:17 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "j18tdglzvp"
+        },
+        {
+          "Name": "label",
+          "Value": "images/products/39390754-7ceb-459e-8c58-da284cbc4ad0_cola.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-CbVxECmLAIqGpX9t2kdg2puISo5u9mCgVgLdR/o8kr4="
+        }
+      ]
+    },
+    {
+      "Route": "images/products/39390754-7ceb-459e-8c58-da284cbc4ad0_cola.jpg",
+      "AssetFile": "D:\\NetbyIt\\backend\\ProductService\\wwwroot\\images\\products\\39390754-7ceb-459e-8c58-da284cbc4ad0_cola.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3630823"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"CbVxECmLAIqGpX9t2kdg2puISo5u9mCgVgLdR/o8kr4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 03 Apr 2025 19:15:17 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-CbVxECmLAIqGpX9t2kdg2puISo5u9mCgVgLdR/o8kr4="
+        }
+      ]
+    }
+  ]
+}
